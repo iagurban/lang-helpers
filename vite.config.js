@@ -96,6 +96,7 @@ export default defineConfig({
     }),
   ],
   cacheDir: '.vite-cache',
+  base: '/lang-helpers/',
   server: {
     watch: true,
   },
