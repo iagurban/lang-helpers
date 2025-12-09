@@ -1,0 +1,5 @@
+{
+  "//": "This file has been generated with ``paaoo``, changes will be overwritten at some moment",
+  "preset": "ts-jest",
+  "testEnvironment": "node"
+}

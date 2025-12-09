@@ -1,0 +1,42 @@
+.gnCell {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  font-size: 0.6rem;
+
+  align-items: center;
+  justify-content: space-around;
+
+  //> :not(:last-child) {
+  //  margin-absRight: 4px;
+  //}
+
+  .pair {
+    > :not(:last-child) {
+      margin-right: -0.4rem;
+    }
+
+    .icon {
+      $size: 1.2rem;
+      height: $size;
+      width: $size;
+    }
+
+    .arrow {
+      width: 0.8rem;
+      height: 1.5rem;
+      margin-top: -0.8rem;
+      margin-bottom: -100%;
+    }
+
+    &.animated {
+      .arrow {
+        margin-top: 0.5rem;
+        transform: rotate(180deg);
+      }
+    }
+  }
+}

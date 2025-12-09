@@ -1,0 +1,55 @@
+import { Button, Drawer, Flex, Switch } from '@mantine/core';
+import { observer } from 'mobx-react-lite';
+
+import { useRootStore } from './storage.ts';
+
+export const SidePanel = observer(function SidePanel() {
+  const store = useRootStore();
+  return (
+    <Drawer opened={store.sidebarOpened.get()} onClose={() => store.sidebarOpened.set(false)}>
+      <Flex gap={'1rem'} align={'start'} direction="column">
+        {/*<Toolbar>*/}
+        <Button onClick={() => (store.setPage(`montenegrin`), store.sidebarOpened.set(false))}>
+          Got to serbian
+        </Button>
+        <Button onClick={() => (store.setPage(`english-tenses`), store.sidebarOpened.set(false))}>
+          Got to english
+        </Button>
+        <Button onClick={() => store.fontsViewerOpened.set(!store.fontsViewerOpened.get())}>fonts</Button>
+        <Switch
+          checked={store.showAorist}
+          onChange={e => store.setShowAorist(e.target.checked)}
+          label="Aorist"
+        />
+        <Switch
+          checked={store.showImperativ}
+          onChange={e => store.setShowImperativ(e.target.checked)}
+          label="Imperativ"
+        />
+        <Switch
+          checked={store.showDvovidne}
+          onChange={e => store.setShowDvovidne(e.target.checked)}
+          label="Dvovidne"
+        />
+
+        {/*<RunawayA size={`100px`} />*/}
+
+        {/*</Toolbar>*/}
+
+        {/*<TilePatternSvg*/}
+        {/*  color={`#f00`}*/}
+        {/*  width={2}*/}
+        {/*  step={2}*/}
+        {/*  svgProps={{ width: `200px`, height: `100px` }}*/}
+        {/*  holeInset={10}*/}
+        {/*/>*/}
+
+        <Button
+          onClick={() => store.setPage(store.page === `montenegrin` ? `english-tenses` : `montenegrin`)}
+        >
+          {store.page === `montenegrin` ? `english-tenses` : `montenegrin`}
+        </Button>
+      </Flex>
+    </Drawer>
+  );
+});
