@@ -17,7 +17,7 @@ import {
   TextInput,
   useCombobox,
 } from '@mantine/core';
-import { omitBy } from 'lodash';
+import { omitBy } from 'lodash-es';
 import { makeAutoObservable, reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { CSSProperties, Fragment, PropsWithChildren, ReactNode, useEffect, useMemo, useState } from 'react';

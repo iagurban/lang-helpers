@@ -6,6 +6,8 @@ import { defineConfig } from 'vite';
 import { createHtmlPlugin } from 'vite-plugin-html';
 // import {dancingFontUrl} from "./src/_inject";
 
+import { visualizer } from 'rollup-plugin-visualizer';
+
 // import externalize from 'vite-plugin-externalize-dependencies';
 
 // import tsconfigPaths from 'vite-tsconfig-paths';
@@ -13,26 +15,36 @@ import { createHtmlPlugin } from 'vite-plugin-html';
 // https://vitejs.dev/config/
 export default defineConfig({
   assetsInclude: ['**/*.woff2'],
+  resolve: {
+    alias: {
+      // Force Vite to resolve to the specific ESM index file directly
+      // This sometimes helps Rollup break it apart better than the default entry point
+      '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+    },
+  },
   build: {
     minify: true,
     rollupOptions: {
       output: {
-        manualChunks: (id)  => {
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-
-          return null;
-        }
+        // manualChunks: id => {
+        //   if (id.includes('node_modules')) {
+        //     return 'vendor';
+        //   }
+        //
+        //   return null;
+        // },
       },
       treeshake: {
         preset: 'smallest',
-        moduleSideEffects: (id) => {
+        moduleSideEffects: id => {
           // console.log(`id`, id);
           // If the module path matches dnd-kit, tell Rollup it has NO side effects.
           // This allows Rollup to delete the import entirely if the variable is unused.
           if (id.includes('@dnd-kit/')) {
             return false;
+          }
+          if (id.includes('tabler-icons') || id.includes('tabler/icons')) {
+            return false; // Force side-effect free
           }
           // Return null to fall back to the default behavior for all other modules
           return null;
@@ -93,6 +105,13 @@ export default defineConfig({
           },
         ],
       },
+    }),
+    visualizer({
+      template: 'treemap', // or sunburst
+      open: true, // will open the report in your browser automatically
+      gzipSize: true, // shows the size of your files when gzipped (most relevant for web)
+      brotliSize: true,
+      filename: 'analyse.html', // name of the output file
     }),
   ],
   cacheDir: '.vite-cache',
