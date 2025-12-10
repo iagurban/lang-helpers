@@ -1,5 +1,4 @@
 import { isTruthy } from '@grbn/kit';
-import { Model, model, prop } from 'mobx-keystone';
 
 import rawIrregularVerbs from './irregular-verbs.json';
 
@@ -43,13 +42,15 @@ export const pronounAliases: Partial<Record<Pronoun, string>> = {
   i: `I`,
 } as const;
 
-const simpleDo = {
+const doForms = {
   present: {
     thirdSinglePerson: `does`,
     other: `do`,
   },
   past: `did`,
 } as const;
+
+const doFormsSet = new Set<string>([doForms.present.other, doForms.present.thirdSinglePerson, doForms.past]);
 
 const reflexivePronouns = {
   i: `myself`,
@@ -204,11 +205,11 @@ const updateAuxForNegation = (
   return [
     (tense === `present`
       ? isThirdPersonSingular(subject)
-        ? simpleDo.present.thirdSinglePerson
-        : simpleDo.present.other
+        ? doForms.present.thirdSinglePerson
+        : doForms.present.other
       : tense === `past`
-        ? simpleDo.past
-        : simpleDo.present.other) + ` not`,
+        ? doForms.past
+        : doForms.present.other) + ` not`,
   ];
 };
 
@@ -220,10 +221,10 @@ const updateAuxForQuestions = (
     params.aspect === `simple`
       ? params.tense === `present`
         ? isThirdPersonSingular(params.subject)
-          ? simpleDo.present.thirdSinglePerson
-          : simpleDo.present.other
+          ? doForms.present.thirdSinglePerson
+          : doForms.present.other
         : params.tense === `past`
-          ? simpleDo.past
+          ? doForms.past
           : null
       : null
   );
@@ -248,7 +249,7 @@ export const buildAbstractSentenceParts = (
 
   const needsBareForm =
     ((params.type === `interrogative` || !!params.modal) && params.aspect === `simple`) ||
-    ([`do`, `does`, `did`].includes(aux[0]) && aux[1] === `not`);
+    (doFormsSet.has(aux[0]) && aux[1] === `not`);
 
   return {
     aux,
@@ -261,37 +262,37 @@ export const isPronounString = (o: string): o is Pronoun => allPronounsSet.has(o
 export const isSentenceTypeString = (o: string): o is SentenceType => allSentenceTypesSet.has(o);
 export const isModalVerbsString = (o: string): o is ModalVerb => allModalVerbsSet.has(o);
 
-@model(`tables/EnglishTense/BasicSentenceConfig`)
-class BasicSentenceConfig extends Model({
-  pronoun: prop<Pronoun>(),
-  verb: prop<string>(),
-  type: prop<SentenceType>(),
-  reflexive: prop<Reflexive>(),
-}) {}
-
-@model(`tables/EnglishTense/SentenceConfig`)
-class SentenceConfig extends Model({
-  pronoun: prop<Pronoun | null>(null),
-  verb: prop<string | null>(null),
-  type: prop<SentenceType | null>(null),
-  reflexive: prop<Reflexive | null>(null),
-}) {}
-
-@model(`tables/EnglishTense/CellConfig`)
-class CellConfig extends Model({
-  sentences: prop<SentenceConfig[]>(),
-}) {}
-
-@model(`tables/EnglishTense/CellConfig`)
-class ConditionedCellConfig extends Model({
-  condition: prop<{ aspect?: Aspect; tense?: Tense }>(),
-  config: prop<CellConfig>(),
-}) {}
-
-@model(`tables/EnglishTense/TableConfig`)
-class TableConfig extends Model({
-  conditioned: prop<BasicSentenceConfig[]>(),
-}) {}
+// @model(`tables/EnglishTense/BasicSentenceConfig`)
+// class BasicSentenceConfig extends Model({
+//   pronoun: prop<Pronoun>(),
+//   verb: prop<string>(),
+//   type: prop<SentenceType>(),
+//   reflexive: prop<Reflexive>(),
+// }) {}
+//
+// @model(`tables/EnglishTense/SentenceConfig`)
+// class SentenceConfig extends Model({
+//   pronoun: prop<Pronoun | null>(null),
+//   verb: prop<string | null>(null),
+//   type: prop<SentenceType | null>(null),
+//   reflexive: prop<Reflexive | null>(null),
+// }) {}
+//
+// @model(`tables/EnglishTense/CellConfig`)
+// class CellConfig extends Model({
+//   sentences: prop<SentenceConfig[]>(),
+// }) {}
+//
+// @model(`tables/EnglishTense/CellConfig`)
+// class ConditionedCellConfig extends Model({
+//   condition: prop<{ aspect?: Aspect; tense?: Tense }>(),
+//   config: prop<CellConfig>(),
+// }) {}
+//
+// @model(`tables/EnglishTense/TableConfig`)
+// class TableConfig extends Model({
+//   conditioned: prop<BasicSentenceConfig[]>(),
+// }) {}
 
 // @model(`tables/EnglishTense/Preset`)
 // class Preset extends Model({

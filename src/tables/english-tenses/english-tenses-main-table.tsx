@@ -1,8 +1,12 @@
 import { isTruthy } from '@grbn/kit';
+import { jsonValueSchema } from '@grbn/kit/zod';
 import {
   Box,
+  Combobox,
   Flex,
+  FlexProps,
   Input,
+  ScrollArea,
   Select,
   Table,
   TableTbody,
@@ -10,13 +14,16 @@ import {
   TableTh,
   TableThead,
   TableTr,
+  TextInput,
+  useCombobox,
 } from '@mantine/core';
-import { makeAutoObservable } from 'mobx';
+import { omitBy } from 'lodash';
+import { makeAutoObservable, reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { CSSProperties, Fragment, PropsWithChildren, ReactNode, useMemo, useState } from 'react';
+import { CSSProperties, Fragment, PropsWithChildren, ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { emptyChar } from '../../const/unicode.tsx';
-import { dancingScriptVariableFontFace } from '../../fonts/variable/dancing-script.ts';
+import rawIrregularVerbs from './irregular-verbs.json';
 import {
   allAspects,
   allModalVerbs,
@@ -29,13 +36,11 @@ import {
   detectVerbForm,
   isModalVerbsString,
   isPronounString,
-  isSentenceTypeString,
   ModalVerb,
   Pronoun,
   pronounAliases,
   SampleData,
   SentenceParams,
-  SentenceType,
   Tense,
   toBeForms,
   toHaveForms,
@@ -81,8 +86,16 @@ const subjunctiveTextStyle = {
 const negativeTextStyle = { color: `#7c131c` } as const satisfies CSSProperties;
 const modalVerbTextStyle = { color: `#0c985e` } as const satisfies CSSProperties;
 
+const InlineFlexSpan = observer<FlexProps>(function InlineFlexSpan({ children, ...props }) {
+  return (
+    <Flex display="inline" component="span" {...props}>
+      {children}
+    </Flex>
+  );
+});
+
 const Space = observer<{ children?: ReactNode }>(function Space({ children }) {
-  return <Flex display="inline">{children ?? ` `}</Flex>;
+  return <InlineFlexSpan>{children ?? ` `}</InlineFlexSpan>;
 });
 
 const getColoredTextStyle = (s: string, modal?: string) =>
@@ -103,47 +116,36 @@ const getColoredTextStyle = (s: string, modal?: string) =>
 const buildColoredSentence = (params: SentenceParams, sampleData: SampleData, modalVerb?: string) => {
   const parts = buildAbstractSentenceParts(params);
 
+  // console.log(parts, parts.verb.make(params, sampleData));
+
   const subjectName = pronounAliases[params.subject] || params.subject;
 
   const firstItems =
     params.type === `interrogative` && parts.aux.length
       ? [
-          <Flex
-            key={`aux-0`}
-            display="inline-block"
-            style={getColoredTextStyle(parts.aux[0].toLowerCase(), modalVerb)}
-          >
+          <InlineFlexSpan key={`aux-0`} style={getColoredTextStyle(parts.aux[0].toLowerCase(), modalVerb)}>
             {capitalize(parts.aux[0])}
-          </Flex>,
+          </InlineFlexSpan>,
           <Fragment key="subject">{subjectName}</Fragment>,
           ...parts.aux.slice(1).map((s, i) => (
-            <Flex
-              key={`aux-${i + 1}`}
-              display="inline-block"
-              style={getColoredTextStyle(s.toLowerCase(), modalVerb)}
-            >
+            <InlineFlexSpan key={`aux-${i + 1}`} style={getColoredTextStyle(s.toLowerCase(), modalVerb)}>
               {s}
-            </Flex>
+            </InlineFlexSpan>
           )),
-        ].filter(isTruthy)
+        ]
       : [
           <Fragment key="subject">{capitalize(subjectName)}</Fragment>,
           ...parts.aux.map((s, i) => (
-            <Flex
-              key={`aux-${i}`}
-              display="inline-block"
-              style={getColoredTextStyle(s.toLowerCase(), modalVerb)}
-            >
+            <InlineFlexSpan key={`aux-${i}`} style={getColoredTextStyle(s.toLowerCase(), modalVerb)}>
               {s}
-            </Flex>
+            </InlineFlexSpan>
           )),
         ];
 
-  return [
+  const allItems = [
     ...firstItems,
-    <Flex
+    <InlineFlexSpan
       key="verb"
-      display="inline-block"
       style={
         parts.verb.id === `ing`
           ? toBeTextStyle
@@ -152,17 +154,26 @@ const buildColoredSentence = (params: SentenceParams, sampleData: SampleData, mo
             : undefined
       }
     >
+      {' '}
       {parts.verb.make(params, sampleData)}
-    </Flex>,
-    parts.reflexive && <Fragment key="reflexive">{parts.reflexive}</Fragment>,
-    sampleData.object && <Fragment key="reflexive">{sampleData.object}</Fragment>,
-    <Fragment key="punct">{params.type === `interrogative` ? `?` : `.`}</Fragment>,
-  ]
-    .filter(isTruthy)
-    .reduce(
-      (a, o, i, arr) => [...a, o, ...(i < arr.length - 2 ? [<Space key={`space-${i}`} />] : [])],
-      [] as ReactNode[]
-    );
+    </InlineFlexSpan>,
+    parts.reflexive && <Fragment key="reflexive"> {parts.reflexive}</Fragment>,
+    sampleData.object && <Fragment key="sampleData"> {sampleData.object}</Fragment>,
+  ].filter(isTruthy);
+
+  const [lastItem] = allItems.splice(allItems.length - 1, 1);
+
+  allItems.push(
+    <InlineFlexSpan key="last-block" style={{ whiteSpace: `nowrap` }}>
+      {lastItem}
+      <InlineFlexSpan key="punct">{params.type === `interrogative` ? `?` : `.`}</InlineFlexSpan>
+    </InlineFlexSpan>
+  );
+
+  return allItems.reduce(
+    (a, o, i, arr) => [...a, o, ...(i < arr.length - 2 ? [<Space key={`space-${i}`} />] : [])],
+    [] as ReactNode[]
+  );
 };
 
 const Sentences = observer<{
@@ -174,7 +185,7 @@ const Sentences = observer<{
   return (
     <Flex direction="column" justify="space-around">
       {allSentenceTypes.map(st => (
-        <Flex key={st} display="inline-block">
+        <InlineFlexSpan key={st}>
           {buildColoredSentence(
             {
               tense,
@@ -183,10 +194,10 @@ const Sentences = observer<{
               subject: prefs.pronoun,
               modal,
             },
-            { verb: prefs.verb },
+            { verb: prefs.verb || verbSymbol },
             modal
           )}
-        </Flex>
+        </InlineFlexSpan>
       ))}
     </Flex>
   );
@@ -269,6 +280,14 @@ const EnglishTableRowHeader = observer<
   );
 });
 
+const verbSymbol =
+  /*`ꪚ`*/
+  /*`𐖃`*/
+  /*`𜳫`*/
+  /*`𝑉`*/
+  `𝕍`;
+// `𝓥`
+
 const EnglishTableFormula = observer<{
   aspect: Aspect;
   tense: Tense | `modal`;
@@ -279,13 +298,7 @@ const EnglishTableFormula = observer<{
   const verb = detectVerbForm(tense, { aspect });
 
   return (
-    <Flex
-      direction="column"
-      align="flex-end"
-      bd="1px dashed #000"
-      p="sm"
-      style={{ alignSelf: `start`, borderRadius: 8 }}
-    >
+    <Flex direction="column" align="flex-end" bd="1px dashed #000" p="sm" style={{ borderRadius: 8 }}>
       {tense === `present` && aspect === `perfectContinuous` ? (
         <Flex direction="row">
           <Flex direction="column" align="center" justify="center" mah="1rem">
@@ -323,12 +336,15 @@ const EnglishTableFormula = observer<{
         </Flex>
       )}
       <Flex display="inline-block">
-        <Box display="inline" ff={dancingScriptVariableFontFace} fz="1.1rem">
-          V
+        {/*<Box display="inline" ff={dancingScriptVariableFontFace} fz="1.1rem">*/}
+        {/*  V*/}
+        {/*</Box>*/}
+        <Box display="inline" fz="1.2rem">
+          {verbSymbol}
         </Box>
         {verb.ending ? (
           <>
-            <Box display="inline">
+            <Box display="inline" style={{ whiteSpace: `nowrap` }}>
               {` + `}
               <Box display="inline" style={verb.ending.value === `ing` ? toBeTextStyle : toHaveTextStyle}>
                 {verb.ending.value}
@@ -353,8 +369,8 @@ const EnglishTableCell = observer<{
   prefs: ReturnType<typeof makePrefs>;
 }>(function EnglishTableCell({ tense, aspect, modal, prefs }) {
   return (
-    <TableTd>
-      <Flex direction="row" justify="space-between">
+    <TableTd miw={aspect === `perfectContinuous` ? '17rem' : '12rem'}>
+      <Flex direction="row" justify="space-between" align="center" gap="0.5rem">
         <Sentences tense={tense} aspect={aspect} modal={modal} prefs={prefs} />
         <EnglishTableFormula aspect={aspect} tense={tense} modal={modal} />
       </Flex>
@@ -362,7 +378,7 @@ const EnglishTableCell = observer<{
   );
 });
 
-const makePrefs = (pronoun: Pronoun, verb: string, type: SentenceType) =>
+const makePrefs = (pronoun: Pronoun, verb: string) =>
   makeAutoObservable({
     pronoun,
     setPronoun(pronoun: Pronoun) {
@@ -372,33 +388,79 @@ const makePrefs = (pronoun: Pronoun, verb: string, type: SentenceType) =>
     setVerb(verb: string) {
       this.verb = verb;
     },
-    type,
-    setType(type: SentenceType) {
-      this.type = type;
-    },
   });
+
+const VerbSelector = observer<{
+  value: string;
+  onChange: (value: string) => void;
+}>(function VerbSelector({ value, onChange }) {
+  const combobox = useCombobox();
+  const filteredOptions = Object.entries(rawIrregularVerbs).filter(([base]) =>
+    base.includes(value.toLowerCase().trim())
+  );
+
+  const options = filteredOptions.map(([item, [simple, participle]]) => (
+    <Combobox.Option value={item} key={item}>
+      <Flex justify="space-between">
+        <Box w="6rem">{item}</Box>
+        <Box w="10rem">{simple}</Box>
+        <Box w="10rem">{participle}</Box>
+      </Flex>
+    </Combobox.Option>
+  ));
+
+  return (
+    <Combobox
+      onOptionSubmit={optionValue => {
+        onChange(optionValue);
+        combobox.closeDropdown();
+      }}
+      store={combobox}
+    >
+      <Combobox.Target>
+        <TextInput
+          placeholder="Pick value or type anything"
+          value={value}
+          onChange={event => {
+            onChange(event.currentTarget.value);
+            combobox.openDropdown();
+            combobox.updateSelectedOptionIndex();
+          }}
+          onClick={() => combobox.openDropdown()}
+          onFocus={() => combobox.openDropdown()}
+          onBlur={() => combobox.closeDropdown()}
+        />
+      </Combobox.Target>
+
+      <Combobox.Dropdown maw="40rem">
+        <Combobox.Options>
+          {options.length === 0 ? (
+            <Combobox.Empty>Nothing found</Combobox.Empty>
+          ) : (
+            <ScrollArea.Autosize type="scroll" mah="80vh">
+              {options}
+            </ScrollArea.Autosize>
+          )}
+        </Combobox.Options>
+      </Combobox.Dropdown>
+    </Combobox>
+  );
+});
 
 const GenerationDataEditControls = observer<{
   data: ReturnType<typeof makePrefs>;
 }>(function GenerationDataEditControls({ data }) {
   return (
-    <Flex direction="column">
-      <Input.Wrapper label="Pronoun">
+    <Flex direction="row" w="100%" gap="1rem">
+      <Input.Wrapper label="Pronoun" flex="1">
         <Select
           data={allPronouns.map(s => ({ label: pronounAliases[s] || s, value: s }))}
           value={data.pronoun}
           onChange={v => v && isPronounString(v) && data.setPronoun(v)}
         />
       </Input.Wrapper>
-      <Input.Wrapper label="Verb">
-        <Input value={data.verb} onChange={node => data.setVerb(node.target.value)} />
-      </Input.Wrapper>
-      <Input.Wrapper label="Type">
-        <Select
-          data={allSentenceTypes.map(s => ({ label: s, value: s }))}
-          value={data.type}
-          onChange={v => v && isSentenceTypeString(v) && data.setType(v)}
-        />
+      <Input.Wrapper label="Verb" flex="1">
+        <VerbSelector value={data.verb} onChange={node => data.setVerb(node)} />
       </Input.Wrapper>
     </Flex>
   );
@@ -423,104 +485,126 @@ const HeaderVerbsHelperContent = observer<{
   );
 });
 
+const localStorageEnglishKey = `english-tenses-prefs`;
+
 export const EnglishTensesMainTable = observer(function EnglishTensesMainTable() {
-  const globalPrefs = useMemo(() => makePrefs(`i`, `work`, `interrogative`), []);
+  const globalPrefs = useMemo(() => {
+    const data = JSON.parse(localStorage.getItem(localStorageEnglishKey) || `{}`);
+    return makePrefs(data.pronoun ?? `i`, data.verb ?? `work`);
+  }, []);
+
+  useEffect(
+    () =>
+      reaction(
+        () => toJS(globalPrefs),
+        g => {
+          localStorage.setItem(
+            localStorageEnglishKey,
+            JSON.stringify(omitBy(g, v => !jsonValueSchema.safeParse(v).success))
+          );
+        }
+      ),
+    [globalPrefs]
+  );
 
   const [selectedModal, setSelectedModal] = useState<ModalVerb>(allModalVerbs[0]);
   const [switchedSubjunctive, setSwitchedSubjunctive] = useState(false);
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" gap="1rem" flex="100%">
       <GenerationDataEditControls data={globalPrefs} />
-      <Table withRowBorders withColumnBorders summary="English tenses">
-        <TableThead>
-          <TableTr>
-            <TableTh />
-            {allAspects.map(aspect => (
-              <EnglishTableHeader key={aspect} aspect={aspect} />
-            ))}
-          </TableTr>
-        </TableThead>
-        <TableTbody>
-          {([`present`, `past`] as const).map(tense => (
-            <TableTr key={tense} pos="relative" h="1px">
-              <EnglishTableRowHeader tense={tense}>
-                <Flex
-                  direction="column"
-                  align="end"
-                  justify="space-around"
-                  fw="lighter"
-                  fs="italic"
-                  style={{ alignSelf: `stretch` }}
-                  gap={4}
-                >
-                  {tense === `present` ? (
-                    <HeaderVerbsHelperContent toDo="do" toBe="am / is / are" toHave="have / has" />
-                  ) : (
-                    <HeaderVerbsHelperContent toDo="did" toBe="were / was" toHave="had" />
-                  )}
-                </Flex>
-              </EnglishTableRowHeader>
+      <ScrollArea h="100%">
+        <Table withRowBorders withColumnBorders summary="English tenses">
+          <TableThead>
+            <TableTr>
+              <TableTh />
               {allAspects.map(aspect => (
-                <EnglishTableCell key={aspect} aspect={aspect} tense={tense} prefs={globalPrefs} />
+                <EnglishTableHeader key={aspect} aspect={aspect} />
               ))}
             </TableTr>
-          ))}
-          <TableTr>
-            <TableTh>
-              <Box display="inline">
-                <Box display="inline" style={switchedSubjunctive ? subjunctiveTextStyle : futureTextStyle}>
-                  {switchedSubjunctive ? `subjunctive` : `future`}
-                </Box>
-                {` `}
-                <Box
-                  display="inline"
-                  style={{
-                    ...(switchedSubjunctive ? futureTextStyle : subjunctiveTextStyle),
-                    textDecorationLine: 'underline',
-                    opacity: 0.2,
-                    cursor: `pointer`,
-                  }}
-                  onClick={() => setSwitchedSubjunctive(v => !v)}
-                >
-                  {`or `}
-                  {switchedSubjunctive ? `future` : `subjunctive`}
-                </Box>
-              </Box>
-            </TableTh>
-            {allAspects.map(aspect => (
-              <EnglishTableCell
-                key={aspect}
-                aspect={aspect}
-                tense={`modal`}
-                modal={switchedSubjunctive ? `would` : `will`}
-                prefs={globalPrefs}
-              />
+          </TableThead>
+          <TableTbody>
+            {([`present`, `past`] as const).map(tense => (
+              <TableTr key={tense} pos="relative" h="1px">
+                <EnglishTableRowHeader tense={tense}>
+                  <Flex
+                    direction="column"
+                    align="end"
+                    justify="space-around"
+                    fw="lighter"
+                    fs="italic"
+                    style={{ alignSelf: `stretch` }}
+                    gap={4}
+                    miw="5rem"
+                  >
+                    {tense === `present` ? (
+                      <HeaderVerbsHelperContent toDo="do" toBe="am / is / are" toHave="have / has" />
+                    ) : (
+                      <HeaderVerbsHelperContent toDo="did" toBe="were / was" toHave="had" />
+                    )}
+                  </Flex>
+                </EnglishTableRowHeader>
+                {allAspects.map(aspect => (
+                  <EnglishTableCell key={aspect} aspect={aspect} tense={tense} prefs={globalPrefs} />
+                ))}
+              </TableTr>
             ))}
-          </TableTr>
-          <TableTr>
-            <TableTh>
-              <Input.Wrapper label="modal">
-                <Select
-                  data={allModalVerbs.map(v => ({ label: v, value: v }))}
-                  value={selectedModal}
-                  onChange={v => v && isModalVerbsString(v) && setSelectedModal(v)}
-                  style={{ width: `min-content`, minWidth: `100%` }}
+            <TableTr>
+              <TableTh>
+                <Box display="inline">
+                  <Box display="inline" style={switchedSubjunctive ? subjunctiveTextStyle : futureTextStyle}>
+                    {switchedSubjunctive ? `subjunctive` : `future`}
+                  </Box>
+                  {` `}
+                  <Box
+                    display="inline"
+                    style={{
+                      ...(switchedSubjunctive ? futureTextStyle : subjunctiveTextStyle),
+                      textDecorationLine: 'underline',
+                      opacity: 0.2,
+                      cursor: `pointer`,
+                    }}
+                    onClick={() => setSwitchedSubjunctive(v => !v)}
+                  >
+                    {`or `}
+                    {switchedSubjunctive ? `future` : `subjunctive`}
+                  </Box>
+                </Box>
+              </TableTh>
+              {allAspects.map(aspect => (
+                <EnglishTableCell
+                  key={aspect}
+                  aspect={aspect}
+                  tense={`modal`}
+                  modal={switchedSubjunctive ? `would` : `will`}
+                  prefs={globalPrefs}
                 />
-              </Input.Wrapper>
-            </TableTh>
-            {allAspects.map(aspect => (
-              <EnglishTableCell
-                key={aspect}
-                tense="modal"
-                aspect={aspect}
-                prefs={globalPrefs}
-                modal={selectedModal}
-              />
-            ))}
-          </TableTr>
-        </TableTbody>
-      </Table>
+              ))}
+            </TableTr>
+            <TableTr>
+              <TableTh>
+                <Input.Wrapper label="modal">
+                  <Select
+                    data={allModalVerbs.map(v => ({ label: v, value: v }))}
+                    value={selectedModal}
+                    onChange={v => v && isModalVerbsString(v) && setSelectedModal(v)}
+                    style={{ width: `min-content`, minWidth: `100%` }}
+                  />
+                </Input.Wrapper>
+              </TableTh>
+              {allAspects.map(aspect => (
+                <EnglishTableCell
+                  key={aspect}
+                  tense="modal"
+                  aspect={aspect}
+                  prefs={globalPrefs}
+                  modal={selectedModal}
+                />
+              ))}
+            </TableTr>
+          </TableTbody>
+        </Table>
+      </ScrollArea>
     </Flex>
   );
 });

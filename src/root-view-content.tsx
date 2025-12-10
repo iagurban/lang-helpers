@@ -94,6 +94,7 @@ export const RootViewContent = observer(function RootViewContent() {
           gap={'0.5rem'}
           p={'8px'}
           ref={resizeObserver.ref}
+          h="100wh"
         >
           {/*<TilesTestView />*/}
 
@@ -101,7 +102,7 @@ export const RootViewContent = observer(function RootViewContent() {
             preSlot={
               <Burger
                 opened={store.sidebarOpened.get()}
-                onClick={() => store.sidebarOpened.set(!store.sidebarOpened.get())}
+                onClick={() => store.setSidebarOpened(!store.sidebarOpened.get())}
                 aria-label="Toggle sidebar"
               />
             }

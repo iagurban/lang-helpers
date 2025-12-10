@@ -1,6 +1,6 @@
 import { uidGenerator } from '@grbn/kit';
 import { createUsableContext } from '@grbn/kit/react';
-import { autorun, observable } from 'mobx';
+import { action, autorun, observable } from 'mobx';
 import { fromSnapshot, getSnapshot, Model, model, prop } from 'mobx-keystone';
 import { Roarr as log } from 'roarr';
 
@@ -41,6 +41,16 @@ export class RootStore extends Model({
 
   readonly fontsViewerOpened = observable.box(false);
   readonly sidebarOpened = observable.box(false);
+
+  @action
+  setFontsViewerOpened(opened: boolean) {
+    this.fontsViewerOpened.set(opened);
+  }
+
+  @action
+  setSidebarOpened(opened: boolean) {
+    this.sidebarOpened.set(opened);
+  }
 }
 
 export const {

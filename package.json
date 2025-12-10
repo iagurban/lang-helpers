@@ -62,7 +62,8 @@
     "roarr": "^7.21.1",
     "sass-embedded": "^1.89.2",
     "typescript": "^5.8.3",
-    "vite-plugin-html": "^3.2.2"
+    "vite-plugin-html": "^3.2.2",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@dnd-kit/core": "^6.3.1",
