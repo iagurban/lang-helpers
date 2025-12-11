@@ -1,7 +1,7 @@
 import { Flex } from '@mantine/core';
+import { IconCaretRightFilled as ArrowRightIcon } from '@tabler/icons-react';
 import { observer } from 'mobx-react-lite';
 
-import { ArrowRightIcon } from '../../const/icons.ts';
 import { semiHeaderQuellStyle } from '../../const/styles-parts.tsx';
 import { ComplexAnchorDecl } from '../../parts/styling/anchor.tsx';
 import { VrstLabel } from '../../parts/styling/vrst-label.tsx';

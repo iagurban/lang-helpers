@@ -1,7 +1,7 @@
 import { Flex } from '@mantine/core';
+import { IconCaretLeftFilled as ArrowLeftIcon } from '@tabler/icons-react';
 import { observer } from 'mobx-react-lite';
 
-import { ArrowLeftIcon } from '../../const/icons.ts';
 import { AsteriskVarDecl } from '../../parts/asterisk-var.tsx';
 import { VrstLabel } from '../../parts/styling/vrst-label.tsx';
 import { numberWrap } from '../../util/number-wrap.tsx';

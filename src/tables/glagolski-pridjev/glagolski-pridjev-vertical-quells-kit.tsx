@@ -1,9 +1,9 @@
 import { samplesBy } from '@grbn/kit';
 import { Flex } from '@mantine/core';
+import { IconCaretDownFilled as ArrowDownIcon } from '@tabler/icons-react';
 import { observer } from 'mobx-react-lite';
 import { Fragment } from 'react';
 
-import { ArrowDownIcon } from '../../const/icons.ts';
 import { semiHeaderQuellStyle } from '../../const/styles-parts.tsx';
 import { StandardJdMnMSZHeader } from '../../parts/standard-jd-mn-m-s-z-header.tsx';
 import { VrstLabel } from '../../parts/styling/vrst-label.tsx';

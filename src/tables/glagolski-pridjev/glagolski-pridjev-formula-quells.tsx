@@ -1,6 +1,6 @@
+import { IconDirectionSign as DirectionSignIcon } from '@tabler/icons-react';
 import { observer } from 'mobx-react-lite';
 
-import { DirectionSignIcon } from '../../const/icons.ts';
 import { Anchor } from '../../parts/styling/anchor.tsx';
 import { makeFormulaFrameProps } from '../../parts/tiles.tsx';
 import { numberWrap } from '../../util/number-wrap.tsx';

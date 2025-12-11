@@ -608,3 +608,5 @@ export const EnglishTensesMainTable = observer(function EnglishTensesMainTable()
     </Flex>
   );
 });
+
+export default EnglishTensesMainTable;

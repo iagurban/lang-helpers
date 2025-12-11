@@ -885,12 +885,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grbn/kit@npm:^0.0.12":
-  version: 0.0.12
-  resolution: "@grbn/kit@npm:0.0.12"
+"@grbn/kit@npm:^0.0.21":
+  version: 0.0.21
+  resolution: "@grbn/kit@npm:0.0.21"
   dependencies:
     "@loancrate/prisma-schema-parser": "npm:^3.0.0"
     "@mrleebo/prisma-ast": "npm:^0.12.1"
+    lodash-es: "npm:^4.17.21"
   peerDependencies:
     "@apollo/client": "*"
     "@dnd-kit/core": "*"
@@ -912,7 +913,6 @@ __metadata:
     graphql: "*"
     ioredis: "*"
     jwks-rsa: "*"
-    lodash: "*"
     mobx-keystone: "*"
     mobx-utils: "*"
     ntp-time: "*"
@@ -923,13 +923,13 @@ __metadata:
     yargs: "*"
     zod: "*"
   bin:
-    build-info-gen: dist/src/bin/build-info-gen.js
-    clean-md: dist/src/bin/clean-md.js
-    dotenv-flat: dist/src/bin/dotenv-flat.js
-    fetch-unicode-letters-ranges: dist/src/bin/fetch-unicode-letters-ranges.js
-    fix-graphql-codegen: dist/src/bin/fix-graphql-codegen.js
-    watch-n-run: dist/src/bin/watch-n-run.js
-  checksum: 10c0/74d226b79002d5c43754fdca4273f96bb9ec54534386b056aea4118a6abba79e00f5f5ce9e824babf06f3abbe62a7e2233b2ee130646e90b49814fc286d7d561
+    build-info-gen: dist/cjs/src/bin/build-info-gen.js
+    clean-md: dist/cjs/src/bin/clean-md.js
+    dotenv-flat: dist/cjs/src/bin/dotenv-flat.js
+    fetch-unicode-letters-ranges: dist/cjs/src/bin/fetch-unicode-letters-ranges.js
+    fix-graphql-codegen: dist/cjs/src/bin/fix-graphql-codegen.js
+    watch-n-run: dist/cjs/src/bin/watch-n-run.js
+  checksum: 10c0/1af1e6c65601031389400d20dcdf76db8e448e6757cc0396b62e97d2695fc09e68cb8297ae9960920bce2ace64b10d35cbb99439da88eaf0c91cd9a6b43e4fc5
   languageName: node
   linkType: hard
 
@@ -6223,7 +6223,7 @@ __metadata:
     "@fontsource-variable/roboto-serif": "npm:^5.2.8"
     "@fontsource-variable/roboto-slab": "npm:^5.2.8"
     "@fontsource/inter": "npm:^5.2.8"
-    "@grbn/kit": "npm:^0.0.12"
+    "@grbn/kit": "npm:^0.0.21"
     "@mantine/core": "npm:8.3.10"
     "@mantine/hooks": "npm:8.3.10"
     "@tabler/icons-react": "npm:^3.35.0"

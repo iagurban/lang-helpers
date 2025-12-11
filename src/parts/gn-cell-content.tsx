@@ -1,8 +1,8 @@
 import { Flex, Tooltip } from '@mantine/core';
+import { IconMan as PersonIcon, IconTree as TreeIcon } from '@tabler/icons-react';
 import { clsx } from 'clsx';
 import { observer } from 'mobx-react-lite';
 
-import { PersonIcon, TreeIcon } from '../const/icons.ts';
 import { palette } from '../const/lang-palettes.tsx';
 import { svgDefsIds } from '../const/whatewer.ts';
 import { anchored, xmlns } from '../util/tiles-pattern-svg.tsx';

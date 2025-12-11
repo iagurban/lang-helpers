@@ -1,9 +1,9 @@
 import { useResizeObserver } from '@grbn/kit/react/mobx';
-import { Burger, Flex, Modal, Text } from '@mantine/core';
+import { Burger, Flex, Loader, Modal, Text } from '@mantine/core';
+import { IconMan as PersonIcon, IconTree as TreeIcon } from '@tabler/icons-react';
 import { observer } from 'mobx-react-lite';
-import { useMemo, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 
-import { PersonIcon, TreeIcon } from './const/icons.ts';
 import { palette } from './const/lang-palettes.tsx';
 import { endingQuellNormalHeight } from './const/whatewer.ts';
 import { dancingScriptVariableFontFace } from './fonts/variable/dancing-script.ts';
@@ -15,51 +15,16 @@ import { makeFormulaFrameProps } from './parts/tiles.tsx';
 import { SidePanel } from './side-panel.tsx';
 import { useRootStore } from './storage.ts';
 import { LayouterProvider, makeLayouter } from './tables/columns-definitions.tsx';
-import { EnglishTensesMainTable } from './tables/english-tenses/english-tenses-main-table.tsx';
-import { GlagolskiFormeFullQuable } from './tables/glagolske-forme/glagolski-forme-full-quable.tsx';
 import { SquareBracedExpr } from './tables/glagolske-forme/glagolski-forme-left-header-quells.tsx';
-import { ImenicaBlockFullQuable } from './tables/imenica-block/imenica-block-full-quable.tsx';
 import { ExchangeSymbolContent } from './tables/imenica-block/subjects-content-quells.tsx';
-import { LicniImeniceFullQuable } from './tables/licni-zamenice/licni-imenice-full-quable.tsx';
-import { OdnosneZameniceFullQuable } from './tables/zamenica/odnosne-zamenice-full-quable.tsx';
-import { Collapsible } from './util/collapsible.tsx';
 import { cssFontFamily } from './util/fonts-helpers.ts';
 import { FontsViewerInstance } from './util/fonts-viewer-instance.tsx';
 import { WithTiledBackground } from './util/tiles-pattern-svg.tsx';
 import { useBrowserRerenderBugfix } from './util/use-browser-rerender-bugfix.ts';
 import { ProvideResizeObserverEngine } from './util/use-resize-observer-2.tsx';
 
-const MainTable = observer(function MainTable() {
-  const store = useRootStore();
-  return (
-    <Flex direction="column">
-      <Collapsible
-        opened={store.subjektiOpened}
-        onOpenChange={opened => store.setSubjektiOpened(opened)}
-        headerContent={() => <Flex style={{ cursor: `pointer` }}>Subjekti</Flex>}
-      >
-        <ImenicaBlockFullQuable />
-      </Collapsible>
-
-      <Collapsible
-        opened={store.predikatiOpened}
-        onOpenChange={opened => store.setPredikatiOpened(opened)}
-        headerContent={() => <Flex style={{ cursor: `pointer` }}>Predikate</Flex>}
-      >
-        <GlagolskiFormeFullQuable />
-      </Collapsible>
-
-      <Collapsible
-        opened={store.imeniceOpened}
-        onOpenChange={opened => store.setImeniceOpened(opened)}
-        headerContent={() => <Flex style={{ cursor: `pointer` }}>Imenice</Flex>}
-      >
-        <LicniImeniceFullQuable />
-        <OdnosneZameniceFullQuable />
-      </Collapsible>
-    </Flex>
-  );
-});
+const EnglishTensesMainTable = lazy(() => import('./tables/english-tenses/english-tenses-main-table.tsx'));
+const SerbianTable = lazy(() => import('./tables/serbian-table.tsx'));
 
 export const RootViewContent = observer(function RootViewContent() {
   const store = useRootStore();
@@ -173,11 +138,13 @@ export const RootViewContent = observer(function RootViewContent() {
           </Legend>
 
           {store.page === `montenegrin` ? (
-            <>
-              <MainTable />
-            </>
+            <Suspense fallback={<Loader size="xl" />}>
+              <SerbianTable />
+            </Suspense>
           ) : (
-            <EnglishTensesMainTable />
+            <Suspense fallback={<Loader size="xl" />}>
+              <EnglishTensesMainTable />
+            </Suspense>
           )}
         </Flex>
       </LayouterProvider>

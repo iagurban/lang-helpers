@@ -1,8 +1,8 @@
 import { Flex, FlexProps } from '@mantine/core';
+import { IconDirectionSign as DirectionSignIcon } from '@tabler/icons-react';
 import { observer } from 'mobx-react-lite';
 import { forwardRef, PropsWithChildren } from 'react';
 
-import { DirectionSignIcon } from '../../const/icons.ts';
 import { palette } from '../../const/lang-palettes.tsx';
 import {
   eaiHeaderFontStyle,

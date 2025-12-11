@@ -35,7 +35,7 @@
     "@fontsource-variable/roboto-serif": "^5.2.8",
     "@fontsource-variable/roboto-slab": "^5.2.8",
     "@fontsource/inter": "^5.2.8",
-    "@grbn/kit": "^0.0.12",
+    "@grbn/kit": "^0.0.21",
     "@mantine/core": "8.3.10",
     "@mantine/hooks": "8.3.10",
     "@tabler/icons-react": "^3.35.0",

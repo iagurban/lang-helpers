@@ -1,7 +1,10 @@
+import {
+  IconCaretLeftFilled as ArrowLeftIcon,
+  IconCaretRightFilled as ArrowRightIcon,
+} from '@tabler/icons-react';
 import { observer } from 'mobx-react-lite';
 import { ComponentProps } from 'react';
 
-import { ArrowLeftIcon, ArrowRightIcon } from '../../const/icons.ts';
 import { palette } from '../../const/lang-palettes.tsx';
 import { HeadingHeadingTile } from '../../parts/tiles.tsx';
 import { BasicQuell } from '../../util/Quable.tsx';

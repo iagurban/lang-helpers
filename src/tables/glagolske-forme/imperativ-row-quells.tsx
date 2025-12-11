@@ -1,7 +1,7 @@
 import { Flex } from '@mantine/core';
+import { IconDirectionSignOff as DirectionSignOffIcon } from '@tabler/icons-react';
 import { observer } from 'mobx-react-lite';
 
-import { DirectionSignOffIcon } from '../../const/icons.ts';
 import { palette } from '../../const/lang-palettes.tsx';
 import { EmptyChar } from '../../parts/empty-char.tsx';
 import { ZaSamoglOrJ } from '../../parts/parts.tsx';
