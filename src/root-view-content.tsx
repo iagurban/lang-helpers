@@ -18,10 +18,11 @@ import { LayouterProvider, makeLayouter } from './tables/columns-definitions.tsx
 import { SquareBracedExpr } from './tables/glagolske-forme/glagolski-forme-left-header-quells.tsx';
 import { ExchangeSymbolContent } from './tables/imenica-block/subjects-content-quells.tsx';
 import { cssFontFamily } from './util/fonts-helpers.ts';
-import { FontsViewerInstance } from './util/fonts-viewer-instance.tsx';
 import { WithTiledBackground } from './util/tiles-pattern-svg.tsx';
 import { useBrowserRerenderBugfix } from './util/use-browser-rerender-bugfix.ts';
 import { ProvideResizeObserverEngine } from './util/use-resize-observer-2.tsx';
+
+const FontsViewerInstance = lazy(() => import('./util/fonts-viewer-instance.tsx'));
 
 const EnglishTensesMainTable = lazy(() => import('./tables/english-tenses/english-tenses-main-table.tsx'));
 const SerbianTable = lazy(() => import('./tables/serbian-table.tsx'));
@@ -44,13 +45,17 @@ export const RootViewContent = observer(function RootViewContent() {
   return (
     <ProvideResizeObserverEngine>
       <LayouterProvider value={layouter}>
-        <Modal
-          opened={store.fontsViewerOpened.get()}
-          onClose={() => store.fontsViewerOpened.set(false)}
-          style={{ overflow: 'auto' }}
-        >
-          <FontsViewerInstance />
-        </Modal>
+        {import.meta.env.DEV && (
+          <Modal
+            opened={store.fontsViewerOpened.get()}
+            onClose={() => store.fontsViewerOpened.set(false)}
+            style={{ overflow: 'auto' }}
+          >
+            <Suspense fallback={<Loader />}>
+              <FontsViewerInstance />
+            </Suspense>
+          </Modal>
+        )}
         <SidePanel />
 
         <Flex

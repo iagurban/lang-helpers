@@ -19,7 +19,9 @@ export const SidePanel = observer(function SidePanel() {
             Got to english
           </Button>
         )}
-        <Button onClick={() => store.fontsViewerOpened.set(!store.fontsViewerOpened.get())}>fonts</Button>
+        {import.meta.env.DEV && (
+          <Button onClick={() => store.fontsViewerOpened.set(!store.fontsViewerOpened.get())}>fonts</Button>
+        )}
         {store.page === `montenegrin` && (
           <>
             <Switch

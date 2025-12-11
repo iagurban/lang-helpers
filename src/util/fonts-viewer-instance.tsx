@@ -52,3 +52,5 @@ export const FontsViewerInstance = observer(function FontsViewerInstance() {
     </FontsViewer>
   );
 });
+
+export default FontsViewerInstance;

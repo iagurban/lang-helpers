@@ -1536,7 +1536,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/gh-pages@npm:^6":
+"@types/gh-pages@npm:^6.1.0":
   version: 6.1.0
   resolution: "@types/gh-pages@npm:6.1.0"
   checksum: 10c0/d8bf644822df211accac9cff24fcc0a5155fd715d05bc1698175623f5cde1aff81c302e7e38f7105e0fa0fe7ab24d7009d8dbb875897af669f48e06c3c20484c
@@ -1557,7 +1557,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash-es@npm:^4":
+"@types/lodash-es@npm:^4.17.12":
   version: 4.17.12
   resolution: "@types/lodash-es@npm:4.17.12"
   dependencies:
@@ -1566,7 +1566,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:*, @types/lodash@npm:^4":
+"@types/lodash@npm:*, @types/lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "@types/lodash@npm:4.17.21"
   checksum: 10c0/73cb006e047d8871e9d63f3a165543bf16c44a5b6fe3f9f6299e37cb8d67a7b1d55ac730959a81f9def510fd07232ff7e30e05413e5d5a12793baad84ebe36c3
@@ -1580,7 +1580,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18":
+"@types/react-dom@npm:^18.3.7":
   version: 18.3.7
   resolution: "@types/react-dom@npm:18.3.7"
   peerDependencies:
@@ -1589,7 +1589,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18":
+"@types/react@npm:^18.3.27":
   version: 18.3.27
   resolution: "@types/react@npm:18.3.27"
   dependencies:
@@ -5128,7 +5128,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18":
+"react-dom@npm:^18.3.1":
   version: 18.3.1
   resolution: "react-dom@npm:18.3.1"
   dependencies:
@@ -5228,7 +5228,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18":
+"react@npm:^18.3.1":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
@@ -5388,7 +5388,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"roarr@npm:^7.21.1":
+"roarr@npm:^7.21.2":
   version: 7.21.2
   resolution: "roarr@npm:7.21.2"
   dependencies:
@@ -6228,11 +6228,11 @@ __metadata:
     "@mantine/hooks": "npm:8.3.10"
     "@tabler/icons-react": "npm:^3.35.0"
     "@types/babel__core": "npm:^7.20.5"
-    "@types/gh-pages": "npm:^6"
-    "@types/lodash": "npm:^4"
-    "@types/lodash-es": "npm:^4"
-    "@types/react": "npm:^18"
-    "@types/react-dom": "npm:^18"
+    "@types/gh-pages": "npm:^6.1.0"
+    "@types/lodash": "npm:^4.17.21"
+    "@types/lodash-es": "npm:^4.17.12"
+    "@types/react": "npm:^18.3.27"
+    "@types/react-dom": "npm:^18.3.7"
     "@typescript-eslint/eslint-plugin": "npm:^8.35.0"
     "@typescript-eslint/parser": "npm:^8.35.0"
     "@vitejs/plugin-react": "npm:^5.1.2"
@@ -6260,9 +6260,9 @@ __metadata:
     postcss-preset-mantine: "npm:1.18.0"
     postcss-simple-vars: "npm:^7.0.1"
     prettier: "npm:^3.7.4"
-    react: "npm:^18"
-    react-dom: "npm:^18"
-    roarr: "npm:^7.21.1"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
+    roarr: "npm:^7.21.2"
     rollup-plugin-visualizer: "npm:^6.0.5"
     sass-embedded: "npm:^1.89.2"
     typescript: "npm:^5.9.3"

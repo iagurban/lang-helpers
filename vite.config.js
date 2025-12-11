@@ -32,14 +32,13 @@ const tablerEsmPath = tablerCjsPath
 const chunks = {
   mantine: [{ i: `node_modules/@mantine` }, { i: `node_modules/@floating-ui` }],
   individuals: [
-    { i: `node_modules/zod` },
-    { i: `node_modules/@grbn/kit` },
-    { i: `node_modules/chroma` },
-    { i: `node_modules/safe-stable-stringify` },
-    { i: `node_modules/mobx/` },
+    { i: `.zip/node_modules/zod` },
+    { i: `.zip/node_modules/@grbn/kit` },
+    { i: `.zip/node_modules/chroma` },
+    { i: `.zip/node_modules/safe-stable-stringify` },
+    { regex: /\.zip\/node_modules\/mobx(?!-react)/ },
   ],
   lodash: [{ i: `node_modules/lodash-es` }], // used only on English table, loaded lazily when the table opened
-  // react: [{ i: `node_modules/react` }, { i: `node_modules/mobx` }, { i: `node_modules/scheduler` }],
 };
 
 const chunkName = (id) => {
